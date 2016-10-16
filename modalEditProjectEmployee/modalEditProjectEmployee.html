@@ -1,0 +1,54 @@
+<div class="modal-layout-1 add-employee-project-modal">
+	<div class="close">
+		<i class="fa fa-times" ng-click="vm.close();" aria-hidden="true"></i>
+	</div>
+	<form name="addProjectEmployeeForm" ng-submit="vm.submit(addProjectEmployeeForm);" ng-show="vm.contentLoaded">
+		<h2>Edit Employee of {{vm.fetched.selectedProject.label}}</h2>
+		<div class="skill-period-section">
+			<div class="labels">
+				<div>FULL NAME *</div>
+				<div>PERIOD *</div>
+			</div>
+			<div class="form-group">
+				<input type="text" class="textfield border-none" id="employee-dropdown" ng-disabled="disabled" ng-model="vm.editProjectEmployeeModel.employee.userFullName" placeholder="Select a employee" ng-required="true" readonly>
+				<div class="period-block" ng-repeat="period in vm.editProjectEmployeeModel.employee.periods">
+					<md-datepicker ng-model="vm.periodLookup[$index].startDate" ng-change="vm.period.setDate('start', $index, vm.periodLookup[$index].startDate)" md-placeholder="Select from" class="add-project-date-picker-from" ng-init="vm.period.setInputDisabledLeft($index)" md-min-date="vm.fetched.projectDates.startDate" md-max-date="vm.fetched.projectDates.endDate" md-open-on-focus></md-datepicker>
+					<span class="date-separator"> - </span>
+					<md-datepicker ng-model="vm.periodLookup[$index].endDate" ng-change="vm.period.setDate('end', $index, vm.periodLookup[$index].endDate)" md-placeholder="Select to" class="add-project-date-picker-to" ng-init="vm.period.setInputDisabledRight($index)" md-min-date="vm.fetched.projectDates.startDate" md-max-date="vm.fetched.projectDates.endDate" d-open-on-focus></md-datepicker>
+					<div class="remove-skill" ng-hide="$index == 0">
+						<i class="fa fa-trash" ng-click="vm.period.remove($index);" aria-hidden="true"></i>
+					</div>
+					<div style="clear: both"></div>
+					<div ng-if="!period.available">
+						{{vm.editProjectEmployeeModel.employee.userFullName}} is already booked on 3 other projects during this period.
+					</div>
+				</div>
+			</div>
+			<div style="clear: both"></div>
+			<div class="employee-error-message" ng-hide="!vm.datesOverlap">
+				Periods are overlapping.
+			</div>
+			<div class="grey-button btn-medium" ng-click="vm.period.add()">ADD PERIOD</div>
+		</div>
+		<div id="select-employee-section" ng-hide="!vm.editProjectEmployeeModel.employee.user"> <!--  -->
+			<span class="divider"></span>
+			<div class="labels">
+				<div>SKILLS *</div>
+			</div>
+			<div class="form-group">
+				<ul>
+					<li ng-repeat="listSkill in vm.skillListCheckboxes">
+						<input type="checkbox" id="checkbox + {{vm.skillListCheckboxes[$index].id}}" class="checkbox" name="keyEmployee" ng-model="vm.selectedSkillsLookup[$index].checked">
+						<label for="checkbox + {{vm.skillListCheckboxes[$index].id}}"><i class="fa fa-check"></i></label>
+						<span class="skill-name">{{listSkill.label}}</span>
+					</li>
+				</ul>
+			</div>
+			<div class="page-action">
+				<input type="submit" class="page-action-btn btn-large" value="EDIT EMPLOYEE">
+			</div>
+			<div class="remove-employee-btn" ng-click="vm.employee.removeFromProject()">Remove employee from project</div>
+		</div>
+	</form>
+	<div class="loading-icon" ng-show="!vm.contentLoaded"><i class="fa fa-circle-o-notch fa-spin" style="font-size:24px"></i></div>
+</div>

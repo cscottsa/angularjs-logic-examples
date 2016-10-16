@@ -1,0 +1,120 @@
+<header></header>
+<div id="project-find-a-match">
+
+		<div class="find-a-match-secondary-header">
+			<div class="container">
+				<div class="headers-block">
+					<a class="back">Back</a>
+					<h2>Find a match for {{vm.fetched.selectedProject.label}}</h2>
+				</div>
+				<div class="project-search-right">
+					<div class="search-block">
+						<span class="find-a-match-filter-button" ng-click="vm.headerSearchToggle = !vm.headerSearchToggle" ng-class="{'open': vm.headerSearchToggle}">Refine search <i class="fa fa-minus" aria-hidden="true"  ng-show="vm.headerSearchToggle"></i> <i class="fa fa-plus" aria-hidden="true" ng-hide="vm.headerSearchToggle"></i></span>
+
+						<div class="find-a-match-filter-dropdown" ng-show="vm.headerSearchToggle">
+							<div class="skill-col">
+								<h4>Skill</h4>
+								<div class="input-search-group" uib-dropdown is-open="skillDropdown.isopen">
+									<input type="text" class="textfield" id="skill-dropdown" uib-dropdown-toggle ng-disabled="disabled" ng-model="vm.searchSettings.skillLabel" placeholder="Select a skill" ng-required="true" readonly>
+									<ul class="dropdown-menu" uib-dropdown-menu role="menu" aria-labelledby="skill-dropdown">
+										<li ng-click="vm.search.selectSkill(null);">All skills</li>
+										<li ng-repeat="skill in vm.skillListDropdown" ng-click="vm.search.selectSkill(skill);">{{skill.label}}</li>
+									</ul>
+								</div>
+							</div>
+							<div class="period-col">
+								<h4>Period</h4>
+								<div class="period-row" ng-repeat="period in vm.searchSettings.periods">
+									<md-datepicker ng-model="vm.searchSettings.periodLookup[$index].startDate" ng-change="vm.search.changedPeriod('start', $index, vm.searchSettings.periodLookup[$index].startDate);" md-placeholder="Select from" class="add-project-date-picker-from" ng-init="vm.period.setInputDisabledLeft($index)" md-min-date="vm.searchSettings.startDate" md-max-date="vm.searchSettings.endDate" md-open-on-focus></md-datepicker>
+									<md-datepicker ng-model="vm.searchSettings.periodLookup[$index].endDate" ng-change="vm.search.changedPeriod('end', $index, vm.searchSettings.periodLookup[$index].endDate);" md-placeholder="Select to" class="add-project-date-picker-to" ng-init="vm.period.setInputDisabledRight($index)" md-min-date="vm.searchSettings.startDate" md-max-date="vm.searchSettings.endDate" md-open-on-focus></md-datepicker>
+									<div class="remove-skill" ng-hide="$index == 0">
+										<i class="fa fa-trash" ng-click="vm.search.removePeriod($index);" aria-hidden="true"></i>
+									</div>
+								</div>
+								<div class="add-period" ng-click="vm.search.addPeriod()">Add period</div>
+							</div>
+							<div style="clear:both;"></div>
+							<div class="error-message" ng-show="vm.errorMessage">{{vm.errorMessage}}</div>
+
+							<span class="btn-right btn-blue" ng-click="vm.search.go();">Filter</span>
+							<!--<span class="btn-right btn-unavailable btn-grey" ng-show="vm.errorMessage">Filter</span>-->
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="find-a-match-top-block"  id="top-block">
+
+			<div class="project-find-a-match-details">
+				<h3>{{vm.projectDetails.projectName}} | {{vm.projectDetails.startDate}} - {{vm.projectDetails.endDate}}</h3>
+				<h5>Skills(s)</h5>
+				<div class="sub-header-block">
+					<div ng-repeat="skill in vm.projectDetails.skills">{{skill.label}}</div>
+				</div>
+			</div>
+
+			<div class="project-find-a-match-compare" ng-show="vm.selectedEmployee.fullName">
+				<div class="compare-head">
+					<div class="profile-picture" ></div>
+					<div class="employee-details">
+						<div class="name">{{vm.selectedEmployee.fullName}}</div>
+						<div class="job-title">{{vm.selectedEmployee.jobTitle}}</div>
+						<div class="project-periods" ng-repeat="project in vm.selectedEmployee.projects">{{project.projectName}} | {{project.startDateLookup}} - {{project.startDateLookup}}</div>
+					</div>
+					<div class="percentage-compare">
+						<span class="percentage">{{vm.selectedEmployee.rating}}%</span>
+					</div>
+				</div>
+				<div class="compare-table-block">
+					<div class="white-header-table compare-table-selected">
+						<table cellspacing="0">
+							<tr class="white-header">
+								<th class="skill-col">Skill</th><th class="experience-col">Experience</th><th class="skill-type-col">Skill type(s)</th>
+							</tr>
+							<tr class="white-table-record" ng-repeat="skill in vm.selectedEmployee.skills | orderBy:['-projectHas', '-experienceLevel']">
+								<td>
+									<input type="checkbox" id="checkbox + {{vm.selectedEmployee.skills[$index].skillId}}" class="checkbox" name="keyEmployee" ng-model="vm.selectedEmployee.skills[vm.selectedEmployee.skills.indexOf(skill)].checked">
+									<label for="checkbox + {{vm.selectedEmployee.skills[$index].skillId}}" ng-show="skill.projectHas"><i class="fa fa-check"></i></label>
+									<span class="skill-name" ng-class="{'{{vm.helpers.checkIfProjectHasSkill(skill)}}':true, 'checkbox-placeholder':{{!skill.projectHas}} }">{{skill.skillLabel}}</span></td>
+								<td>{{skill.experienceLevelLabel}}</td>
+								<td>
+									<span ng-repeat="subSkill in skill.subSkills" class="subSkills-block"><span ng-hide="$index == 0">, </span>{{subSkill}}</span>
+								</td>
+							</tr>
+
+							<tr ng-if="vm.companyModel.data.skills.length == 0"><td></td></tr>
+							<tr ng-if="vm.companyModel.data.skills.length == 0">
+								<td></td><td></td><td class="no-risk-placeholder">No skills added.</td>
+							</tr>
+						</table>
+					</div>
+				</div>
+				<div>
+					<span class="btn-assign btn-blue" ng-click="vm.assign();" ng-show="vm.compare.checkIfAnyCheckboxSelected()">Assign</span>
+					<span class="btn-assign btn-blue btn-unavailable" ng-hide="vm.compare.checkIfAnyCheckboxSelected()">Assign</span>
+				</div>
+			</div>
+
+		</div>
+		<div class="find-a-match-bottom-block" id="suggested-employees-list">
+			<div class="container">
+				<div class="suggested-employee" ng-repeat="employee in vm.unselectedEmployees | orderBy:['-rating']" ng-hide="vm.selectedEmployeeIdUse == vm.unselectedEmployees[vm.unselectedEmployees.indexOf(employee)].id || vm.projectContentLoaded == false">
+					<div class="compare-head">
+						<div class="profile-picture" ng-style="{'background-image':'url({{employee.avatarUrl}})'}"></div>
+						<div class="employee-details">
+							<div class="name">{{employee.fullName}}</div>
+							<div class="job-title">{{employee.jobTitle}}</div>
+							<div class="project-periods" ng-repeat="project in employee.projects">{{project.projectName}} | {{project.startDateLookup}} - {{project.startDateLookup}}</div>
+						</div>
+						<div class="percentage-compare">
+							<span class="percentage">{{employee.rating}}%</span>
+							<span class="compare-btn" ng-click="vm.compare.employee(employee); vm.helpers.scrollToCompareBlock();">Compare</span>
+						</div>
+
+					</div>
+				</div>
+				<div class="loading-icon" ng-show="vm.projectContentLoaded == false"><i class="fa fa-circle-o-notch fa-spin" style="font-size:24px"></i></div>
+			</div>
+		</div>
+
+</div>
